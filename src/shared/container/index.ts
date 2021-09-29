@@ -1,0 +1,1 @@
+import '@modules/opportunities/container';
