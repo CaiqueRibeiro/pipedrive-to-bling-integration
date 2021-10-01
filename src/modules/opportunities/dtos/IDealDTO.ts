@@ -1,3 +1,8 @@
+interface IMultipleFieldDTO {
+  value: string;
+  primary: boolean;
+}
+
 export interface IDealDTO {
   id: number;
   creator_user_id: {
@@ -21,10 +26,11 @@ export interface IDealDTO {
   person_id: {
     active_flag: boolean;
     name: string;
-    email: Array<string>;
-    phone: Array<string>;
+    email: IMultipleFieldDTO[];
+    phone: IMultipleFieldDTO[];
     owner_id: number;
     value: number;
+    address?: string;
   };
   org_id?: number;
   stage_id: number;

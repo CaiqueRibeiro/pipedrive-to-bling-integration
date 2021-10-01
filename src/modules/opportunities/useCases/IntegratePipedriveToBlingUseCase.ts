@@ -5,10 +5,8 @@ import AppError from '@shared/errors/AppError';
 import IOpportunitiesRepository from '@modules/opportunities/repositories/IOpportunitiesRepository';
 import BlingService from '@modules/opportunities/services/BlingService';
 import PipedriveService from '@modules/opportunities/services/PipedriveService';
-import {
-  IDealDTO,
-  IDealProductDTO,
-} from '@modules/opportunities/dtos/IDealDTO';
+import { IDealDTO } from '@modules/opportunities/dtos/IDealDTO';
+import AggregateDeals from '@modules/opportunities/services/AgreggateDeals';
 
 export interface IListProviderAppointments {
   providerType: string;
@@ -23,6 +21,8 @@ class IntegratePipedriveToBlingUseCase {
     private blingService: BlingService,
     @inject('PipedriveService')
     private pipedriveService: PipedriveService,
+    @inject('AggregateDeals')
+    private aggregateDeals: AggregateDeals,
     @inject('OpportunitiesRepository')
     private opportunitiesRepository: IOpportunitiesRepository,
   ) {}
@@ -38,10 +38,28 @@ class IntegratePipedriveToBlingUseCase {
       (deal: IDealDTO) => deal.products_count,
     );
 
+    let aggregatedDeals = [];
+
     for (const deal of dealsWithProducts) {
       const products = await this.pipedriveService.returnDealWithProducts(
         deal.id,
       );
+
+      if (products) {
+        const xml = await this.blingService.generateXml(deal, products);
+        const orderFound = await this.blingService.getOrder(deal.id);
+
+        if (!orderFound) {
+          await this.blingService.sendNewOrder(xml);
+        }
+
+        aggregatedDeals = this.aggregateDeals.aggregateDeal(
+          aggregatedDeals,
+          deal,
+        );
+      }
+
+      console.log(aggregatedDeals);
     }
   }
 }

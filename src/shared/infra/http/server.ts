@@ -22,7 +22,6 @@ if (cluster.isMaster) {
     console.log(`Worker ${process.pid} is Master.`),
   );
 } else {
-  // Aqui vem o cluster do express;
   const app = express();
 
   app.use(cors());
@@ -45,8 +44,5 @@ if (cluster.isMaster) {
     },
   );
 
-  app.listen(3333, () => {
-    // eslint-disable-next-line no-console
-    console.log('Server started on port 3333');
-  });
+  app.listen(3333);
 }

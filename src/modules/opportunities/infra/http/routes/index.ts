@@ -4,6 +4,6 @@ import OpportunitiesController from '@modules/opportunities/infra/http/controlle
 const opportunitiesRouter = Router();
 const providersController = new OpportunitiesController();
 
-opportunitiesRouter.get('/', providersController.index);
+opportunitiesRouter.get('/integrate', providersController.index);
 
 export default opportunitiesRouter;
