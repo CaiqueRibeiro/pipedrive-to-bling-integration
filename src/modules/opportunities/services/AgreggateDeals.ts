@@ -5,7 +5,7 @@ import { IDealDTO } from '@modules/opportunities/dtos/IDealDTO';
 
 interface IAggregatedDeals {
   [key: string]: {
-    totalValue: number;
+    totalValue: 0;
   };
 }
 
@@ -19,8 +19,8 @@ class AggregateDeals {
     if (!aggregatedDeals[dealDate]) {
       aggregatedDeals[dealDate] = { totalValue: 0 };
     }
-
     aggregatedDeals[dealDate].totalValue += deal.value;
+
     return aggregatedDeals;
   }
 }

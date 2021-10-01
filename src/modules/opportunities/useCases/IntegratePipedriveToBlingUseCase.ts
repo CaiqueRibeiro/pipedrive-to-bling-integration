@@ -51,16 +51,23 @@ class IntegratePipedriveToBlingUseCase {
 
         if (!orderFound) {
           await this.blingService.sendNewOrder(xml);
+
+          aggregatedDeals = this.aggregateDeals.aggregateDeal(
+            aggregatedDeals,
+            deal,
+          );
         }
-
-        aggregatedDeals = this.aggregateDeals.aggregateDeal(
-          aggregatedDeals,
-          deal,
-        );
       }
-
-      console.log(aggregatedDeals);
     }
+
+    Object.entries(aggregatedDeals).forEach(async item => {
+      const obj = {
+        date: item[0],
+        totalValue: item[1].totalValue,
+      };
+      console.log(obj);
+      await this.opportunitiesRepository.create(obj);
+    });
   }
 }
 

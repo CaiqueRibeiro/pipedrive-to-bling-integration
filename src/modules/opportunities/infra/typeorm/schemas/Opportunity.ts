@@ -6,13 +6,10 @@ class Opportunity {
   id: ObjectID;
 
   @Column()
-  date: Date;
+  date: string;
 
   @Column()
-  client: object;
-
-  @Column()
-  items: object;
+  totalValue: object;
 }
 
 export default Opportunity;

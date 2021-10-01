@@ -4,7 +4,7 @@
     "type": "mongodb",
     "host": "localhost",
     "port": 27017,
-    "database": "opportunities",
+    "database": "linkapi",
     "useUnifiedTopology": true,
     "entities": [
       "./src/modules/**/infra/typeorm/schemas/*.ts"

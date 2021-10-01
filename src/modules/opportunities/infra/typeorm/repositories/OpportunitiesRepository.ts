@@ -1,6 +1,5 @@
 import { getMongoRepository, MongoRepository } from 'typeorm';
 import IOpportunitiesRepository from '@modules/opportunities/repositories/IOpportunitiesRepository';
-import IOpportunityDTO from '@modules/opportunities/dtos/IOpportunityDTO';
 import Opportunity from '@modules/opportunities/infra/typeorm/schemas/Opportunity';
 
 class OpportunitiesRepository implements IOpportunitiesRepository {
@@ -10,22 +9,18 @@ class OpportunitiesRepository implements IOpportunitiesRepository {
     this.ormRepository = getMongoRepository(Opportunity, 'mongo');
   }
 
-  public async create({
-    id,
-    date,
-    client,
-    items,
-  }: IOpportunityDTO): Promise<Opportunity> {
-    const opportunity = this.ormRepository.create({
-      id,
-      date,
-      client,
-      items,
-    });
+  public async create(opportunity: Opportunity): Promise<Opportunity> {
+    const opportunityCreated = this.ormRepository.create(opportunity);
 
-    await this.ormRepository.save(opportunity);
+    await this.ormRepository.save(opportunityCreated);
 
-    return opportunity;
+    return opportunityCreated;
+  }
+
+  public async getAll(): Promise<Opportunity[] | null> {
+    const opportunities = await this.ormRepository.find();
+
+    return opportunities;
   }
 }
 

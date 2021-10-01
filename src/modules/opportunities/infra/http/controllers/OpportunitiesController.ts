@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
-import IntegratePipedriveToBlingUseCase from '@modules/opportunities/useCases/IntegratePipedriveToBlingUseCase';
+import GetOpportunitiesPerDayUseCase from '@modules/opportunities/useCases/GetOpportunitiesPerDayUseCase';
 
-export default class AppointmentsController {
+export default class OpportunitiesController {
   public async index(request: Request, response: Response): Promise<Response> {
-    const integratePipedriveToBlingUseCase = container.resolve(
-      IntegratePipedriveToBlingUseCase,
+    const getOpportunitiesPerDayUseCase = container.resolve(
+      GetOpportunitiesPerDayUseCase,
     );
 
-    await integratePipedriveToBlingUseCase.execute();
+    const opportunitiesPerDay = await getOpportunitiesPerDayUseCase.execute();
 
-    return response.json({ ok: true });
+    return response.json(opportunitiesPerDay);
   }
 }
