@@ -1,25 +1,25 @@
 import 'reflect-metadata';
-import { parseISO, format } from 'date-fns';
 
-import { IDealDTO } from '@modules/opportunities/dtos/IDealDTO';
-
-interface IAggregatedDeals {
-  [key: string]: {
-    totalValue: 0;
-  };
+interface IDealAmountPerDayDTO {
+  date: string;
+  value: number;
 }
 
 class AggregateDeals {
-  public aggregateDeal(aggregatedDeals: IAggregatedDeals, deal: IDealDTO): any {
-    const dealDate: keyof IAggregatedDeals = format(
-      parseISO(deal.add_time),
-      'dd/MM/yyyy',
-    );
+  public aggregateDeal(deals: IDealAmountPerDayDTO[]): any {
+    const aggregatedDeals: IDealAmountPerDayDTO[] = deals.reduce(
+      (accumulator: IDealAmountPerDayDTO[], current: IDealAmountPerDayDTO) => {
+        const found = accumulator.findIndex(a => a.date === current.date);
+        if (found >= 0) {
+          accumulator[found].value += current.value;
+        } else {
+          accumulator.push({ date: current.date, value: current.value });
+        }
 
-    if (!aggregatedDeals[dealDate]) {
-      aggregatedDeals[dealDate] = { totalValue: 0 };
-    }
-    aggregatedDeals[dealDate].totalValue += deal.value;
+        return accumulator;
+      },
+      [],
+    );
 
     return aggregatedDeals;
   }

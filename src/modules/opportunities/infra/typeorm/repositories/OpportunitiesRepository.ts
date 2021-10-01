@@ -9,9 +9,17 @@ class OpportunitiesRepository implements IOpportunitiesRepository {
     this.ormRepository = getMongoRepository(Opportunity, 'mongo');
   }
 
-  public async create(opportunity: Opportunity): Promise<Opportunity> {
-    const opportunityCreated = this.ormRepository.create(opportunity);
+  public async create(opportunity: Opportunity): Promise<Opportunity | null> {
+    const isUpdated = await this.ormRepository.findOneAndUpdate(
+      { date: opportunity.date },
+      { $set: { value: opportunity.value } },
+    );
 
+    if (isUpdated.ok === 1) {
+      return null;
+    }
+
+    const opportunityCreated = this.ormRepository.create(opportunity);
     await this.ormRepository.save(opportunityCreated);
 
     return opportunityCreated;

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
+import { parseISO, format } from 'date-fns';
 
 import AppError from '@shared/errors/AppError';
 import IOpportunitiesRepository from '@modules/opportunities/repositories/IOpportunitiesRepository';
@@ -7,12 +8,7 @@ import BlingService from '@modules/opportunities/services/BlingService';
 import PipedriveService from '@modules/opportunities/services/PipedriveService';
 import { IDealDTO } from '@modules/opportunities/dtos/IDealDTO';
 import AggregateDeals from '@modules/opportunities/services/AgreggateDeals';
-
-export interface IListProviderAppointments {
-  providerType: string;
-  providerId: string;
-  date: string;
-}
+import Opportunity from '../infra/typeorm/schemas/Opportunity';
 
 @injectable()
 class IntegratePipedriveToBlingUseCase {
@@ -38,7 +34,7 @@ class IntegratePipedriveToBlingUseCase {
       (deal: IDealDTO) => deal.products_count,
     );
 
-    let aggregatedDeals = [];
+    const dateAndValuesOfDeals = [];
 
     for (const deal of dealsWithProducts) {
       const products = await this.pipedriveService.returnDealWithProducts(
@@ -51,23 +47,20 @@ class IntegratePipedriveToBlingUseCase {
 
         if (!orderFound) {
           await this.blingService.sendNewOrder(xml);
-
-          aggregatedDeals = this.aggregateDeals.aggregateDeal(
-            aggregatedDeals,
-            deal,
-          );
         }
+
+        const dealDate = format(parseISO(deal.add_time), 'dd/MM/yyyy');
+
+        dateAndValuesOfDeals.push({ date: dealDate, value: deal.value });
       }
     }
 
-    Object.entries(aggregatedDeals).forEach(async item => {
-      const obj = {
-        date: item[0],
-        totalValue: item[1].totalValue,
-      };
-      console.log(obj);
-      await this.opportunitiesRepository.create(obj);
-    });
+    const aggregatedDeals =
+      this.aggregateDeals.aggregateDeal(dateAndValuesOfDeals);
+
+    aggregatedDeals.forEach(async (deal: Opportunity) =>
+      this.opportunitiesRepository.create(deal),
+    );
   }
 }
 

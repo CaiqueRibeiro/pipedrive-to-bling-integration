@@ -1,15 +1,21 @@
-import { ObjectID, Entity, Column, ObjectIdColumn } from 'typeorm';
+import {
+  ObjectID,
+  Entity,
+  Column,
+  PrimaryColumn,
+  ObjectIdColumn,
+} from 'typeorm';
 
 @Entity('opportunities')
 class Opportunity {
   @ObjectIdColumn()
   id: ObjectID;
 
-  @Column()
+  @PrimaryColumn()
   date: string;
 
   @Column()
-  totalValue: object;
+  value: object;
 }
 
 export default Opportunity;

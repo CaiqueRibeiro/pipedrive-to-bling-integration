@@ -14,7 +14,7 @@ import {
 import AppError from '@shared/errors/AppError';
 
 class BlingService {
-  public async getOrder(id: number): Promise<IDealDTO> {
+  public async getOrder(id: number): Promise<IDealDTO | null> {
     try {
       const result = await axios.get(
         `${process.env.BLING_API_URL}/pedido/${id}/json`,
@@ -22,6 +22,10 @@ class BlingService {
           params: { apikey: process.env.BLING_API_KEY },
         },
       );
+
+      if (result.data.retorno.erros) {
+        return null;
+      }
 
       return result.data.retorno.pedidos[0].pedido;
     } catch (error) {
