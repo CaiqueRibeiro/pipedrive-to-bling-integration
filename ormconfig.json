@@ -10,7 +10,7 @@
     "ssl": true,
     "authSource": "admin",
     "entities": [
-      "./src/modules/**/infra/typeorm/schemas/*.ts"
+      "./dist/modules/**/infra/typeorm/schemas/*.js"
     ]
   }
 ]
