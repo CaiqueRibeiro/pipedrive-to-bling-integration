@@ -49,6 +49,11 @@ BLING_API_URL=
   }
 ]
 ```
+OBS: no projeto buildado, necessário trocar o local das entities para
+```
+""./dist/modules/**/infra/typeorm/schemas/*.js""
+```
+
 ### 3.2 Caso esteja usando o MongoDB Atlas, use o seguinte formato de configuração:
 ```
 [
