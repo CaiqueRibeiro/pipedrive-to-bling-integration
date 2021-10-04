@@ -4,7 +4,7 @@ import IOpportunitiesRepository from '@modules/opportunities/repositories/IOppor
 import OpportunitiesRepository from '@modules/opportunities/infra/typeorm/repositories/OpportunitiesRepository';
 import PipedriveService from '@modules/opportunities/services/PipedriveService';
 import BlingService from '@modules/opportunities/services/BlingService';
-import AggregateDeals from '@modules/opportunities/services/AgreggateDeals';
+import AggregateDeals from '@modules/opportunities/services/AggregateDeals';
 
 container.registerSingleton<IOpportunitiesRepository>(
   'OpportunitiesRepository',

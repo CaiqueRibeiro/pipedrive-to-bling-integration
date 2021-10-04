@@ -7,8 +7,8 @@ import BlingService from '@modules/opportunities/services/BlingService';
 import PipedriveService from '@modules/opportunities/services/PipedriveService';
 import { IDealDTO } from '@modules/opportunities/dtos/IDealDTO';
 import { IDealAmountPerDayDTO } from '@modules/opportunities/dtos/destiny/IDestinyServiceDTO';
-import AggregateDeals from '@modules/opportunities/services/AgreggateDeals';
-import Opportunity from '../infra/typeorm/schemas/Opportunity';
+import AggregateDeals from '@modules/opportunities/services/AggregateDeals';
+import IOpportunityDTO from '../dtos/IOpportunityDTO';
 
 @injectable()
 class IntegratePipedriveToBlingUseCase {
@@ -53,7 +53,11 @@ class IntegratePipedriveToBlingUseCase {
           const dealDate = format(parseISO(deal.add_time), 'dd/MM/yyyy');
           dateAndValuesOfDeals.push({ date: dealDate, value: deal.value });
         } catch (error) {
-          return { error: error.message };
+          let errorMessage = 'Erro ao realizar integração';
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          return { error: errorMessage };
         }
       }
     }
@@ -61,7 +65,7 @@ class IntegratePipedriveToBlingUseCase {
     const aggregatedDeals =
       this.aggregateDeals.aggregateDeal(dateAndValuesOfDeals);
 
-    aggregatedDeals.forEach(async (deal: Opportunity) =>
+    aggregatedDeals.forEach(async (deal: IOpportunityDTO) =>
       this.opportunitiesRepository.create(deal),
     );
 

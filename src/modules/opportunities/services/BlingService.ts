@@ -12,9 +12,10 @@ import {
   IClientDTO,
 } from '@modules/opportunities/dtos/destiny/IDestinyServiceDTO';
 import AppError from '@shared/errors/AppError';
+import IOrderDTO from '@modules/opportunities/dtos/destiny/IOrderDTO';
 
 class BlingService {
-  public async getOrder(id: number): Promise<IDealDTO | null> {
+  public async getOrder(id: number): Promise<IOrderDTO | null> {
     try {
       const result = await axios.get(
         `${process.env.BLING_API_URL}/pedido/${id}/json`,
@@ -26,7 +27,6 @@ class BlingService {
       if (result.data.retorno.erros) {
         return null;
       }
-
       return result.data.retorno.pedidos[0].pedido;
     } catch (error) {
       throw new AppError(`Error in getting to Bling!`, 403);
