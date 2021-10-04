@@ -2,11 +2,11 @@ import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
 import { parseISO, format } from 'date-fns';
 
-import AppError from '@shared/errors/AppError';
 import IOpportunitiesRepository from '@modules/opportunities/repositories/IOpportunitiesRepository';
 import BlingService from '@modules/opportunities/services/BlingService';
 import PipedriveService from '@modules/opportunities/services/PipedriveService';
 import { IDealDTO } from '@modules/opportunities/dtos/IDealDTO';
+import { IDealAmountPerDayDTO } from '@modules/opportunities/dtos/destiny/IDestinyServiceDTO';
 import AggregateDeals from '@modules/opportunities/services/AgreggateDeals';
 import Opportunity from '../infra/typeorm/schemas/Opportunity';
 
@@ -23,18 +23,18 @@ class IntegratePipedriveToBlingUseCase {
     private opportunitiesRepository: IOpportunitiesRepository,
   ) {}
 
-  async execute(): Promise<void> {
+  async execute(): Promise<{ message?: string; error?: string }> {
     const pipedriveDeals = await this.pipedriveService.returnDeals();
 
     if (!pipedriveDeals) {
-      throw new AppError(`Pipedrives not found!`, 400);
+      return { message: 'Negócios não encontrados no pipedrive' };
     }
 
     const dealsWithProducts = pipedriveDeals.filter(
       (deal: IDealDTO) => deal.products_count,
     );
 
-    const dateAndValuesOfDeals = [];
+    const dateAndValuesOfDeals: IDealAmountPerDayDTO[] = [];
 
     for (const deal of dealsWithProducts) {
       const products = await this.pipedriveService.returnDealWithProducts(
@@ -42,16 +42,19 @@ class IntegratePipedriveToBlingUseCase {
       );
 
       if (products) {
-        const xml = await this.blingService.generateXml(deal, products);
-        const orderFound = await this.blingService.getOrder(deal.id);
+        try {
+          const xml = await this.blingService.generateXml(deal, products);
+          const orderFound = await this.blingService.getOrder(deal.id);
 
-        if (!orderFound) {
-          await this.blingService.sendNewOrder(xml);
+          if (!orderFound) {
+            await this.blingService.sendNewOrder(xml);
+          }
+
+          const dealDate = format(parseISO(deal.add_time), 'dd/MM/yyyy');
+          dateAndValuesOfDeals.push({ date: dealDate, value: deal.value });
+        } catch (error) {
+          return { error: error.message };
         }
-
-        const dealDate = format(parseISO(deal.add_time), 'dd/MM/yyyy');
-
-        dateAndValuesOfDeals.push({ date: dealDate, value: deal.value });
       }
     }
 
@@ -61,6 +64,10 @@ class IntegratePipedriveToBlingUseCase {
     aggregatedDeals.forEach(async (deal: Opportunity) =>
       this.opportunitiesRepository.create(deal),
     );
+
+    return {
+      message: 'Integração realizada com sucesso',
+    };
   }
 }
 

@@ -2,10 +2,13 @@
   {
     "name": "mongo",
     "type": "mongodb",
-    "host": "localhost",
-    "port": 27017,
-    "database": "linkapi",
+    "url": "mongodb+srv://linkapi:linkapi123@cluster0.dhqsm.mongodb.net/linkapi",
+    "useNewUrlParser": true,
+    "useFindAndModify": false,
     "useUnifiedTopology": true,
+    "useCreateIndex": true, 
+    "ssl": true,
+    "authSource": "admin",
     "entities": [
       "./src/modules/**/infra/typeorm/schemas/*.ts"
     ]

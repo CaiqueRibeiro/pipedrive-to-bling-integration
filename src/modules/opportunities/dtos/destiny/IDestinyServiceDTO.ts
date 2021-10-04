@@ -11,3 +11,8 @@ export interface IClientDTO {
   email?: string;
   fone?: string;
 }
+
+export interface IDealAmountPerDayDTO {
+  date: string;
+  value: number;
+}

@@ -1,9 +1,5 @@
 import 'reflect-metadata';
-
-interface IDealAmountPerDayDTO {
-  date: string;
-  value: number;
-}
+import { IDealAmountPerDayDTO } from '@modules/opportunities/dtos/destiny/IDestinyServiceDTO';
 
 class AggregateDeals {
   public aggregateDeal(deals: IDealAmountPerDayDTO[]): any {

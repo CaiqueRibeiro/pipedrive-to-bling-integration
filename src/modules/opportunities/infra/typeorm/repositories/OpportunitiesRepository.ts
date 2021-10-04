@@ -15,7 +15,7 @@ class OpportunitiesRepository implements IOpportunitiesRepository {
       { $set: { value: opportunity.value } },
     );
 
-    if (isUpdated.ok === 1) {
+    if (isUpdated.value) {
       return null;
     }
 

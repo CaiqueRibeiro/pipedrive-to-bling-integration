@@ -8,8 +8,10 @@ export default class OpportunitiesIntegrationController {
       IntegratePipedriveToBlingUseCase,
     );
 
-    await integratePipedriveToBlingUseCase.execute();
-
-    return response.json({ ok: true });
+    const result = await integratePipedriveToBlingUseCase.execute();
+    if (result.message) {
+      return response.status(200).json(result);
+    }
+    return response.status(400).json(result);
   }
 }
