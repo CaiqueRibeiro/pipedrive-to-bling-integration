@@ -15,7 +15,7 @@ class Opportunity {
   date: string;
 
   @Column()
-  value: object;
+  value: number;
 }
 
 export default Opportunity;
